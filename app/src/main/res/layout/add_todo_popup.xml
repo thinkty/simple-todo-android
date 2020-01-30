@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/black_background_with_white_lines">
+
+    <EditText
+        android:id="@+id/input_todo_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_margin="10dp"
+        android:inputType="text"
+        android:cursorVisible="true"
+        android:textCursorDrawable="@drawable/preferred_time_background_drawable"
+        android:hint="@string/todo" />
+
+</LinearLayout>

@@ -17,7 +17,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="15dp"
             android:paddingStart="50dp"
             android:paddingEnd="50dp"
             android:paddingTop="3dp"
@@ -37,18 +37,30 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:background="@drawable/preferred_time_background_drawable"
+            android:layout_margin="10dp"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@drawable/preferred_time_background_drawable"/>
+            android:id="@+id/todo_list" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:background="@drawable/preferred_time_background_drawable"
+            android:layout_margin="10dp"/>
 
         <Button
             android:id="@+id/add_new_todo_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="20dp"
+            android:layout_margin="15dp"
             android:text="@string/add"
             android:textColor="#A8A8A8"
             android:textSize="15sp"

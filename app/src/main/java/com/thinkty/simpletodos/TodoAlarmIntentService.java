@@ -33,7 +33,7 @@ public class TodoAlarmIntentService extends IntentService {
         Log.d(TAG, "Creating notification\n");
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Todo Reminder")
                 .setContentTitle("This is a reminder to check your todo lists")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)

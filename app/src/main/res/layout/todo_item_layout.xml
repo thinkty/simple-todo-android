@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:background="@drawable/black_background_with_white_lines">
+
+
+    <TextView
+        android:id="@+id/todo_item_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:padding="5dp"
+        android:gravity="center_vertical"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical|start"
+        android:textSize="20sp"
+        android:ellipsize="marquee"
+        android:text="temp"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/remove_todo_button"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/preferred_time_background_drawable"
+        android:textSize="14sp" />
+
+
+</LinearLayout>

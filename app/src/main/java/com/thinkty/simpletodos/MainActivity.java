@@ -1,22 +1,31 @@
 package com.thinkty.simpletodos;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -25,11 +34,20 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout preferredTimeContainer;
     private TextView preferredTime;
+    private Button addButton;
+
     private boolean isNotificationOn;
     private String notificationTime;
     private final String TAG = "simpleTodos_Main";
     private int preferredHour;
     private int preferredMinute;
+
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter recyclerViewAdapter;
+    private RecyclerView.LayoutManager recyclerViewLayoutManager;
+    private ArrayList<String> todoItems;
+    private String temporaryTodo;
+    public static int todoCount;
 
     /**
      * @brief Helper to initialize variables
@@ -38,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
         preferredTime = (TextView) findViewById(R.id.preferred_time_textview);
         preferredTimeContainer = (LinearLayout) findViewById(R.id.preferred_time_container);
+        recyclerView = (RecyclerView) findViewById(R.id.todo_list);
+        addButton = (Button) findViewById(R.id.add_new_todo_button);
+        temporaryTodo = "";
 
         // Retrieve preference on notification
         final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
@@ -61,6 +82,32 @@ public class MainActivity extends AppCompatActivity {
         } else {
             preferredTimeContainer.setBackground(getDrawable(R.drawable.preferred_time_background_drawable));
         }
+    }
+
+    /**
+     * @brief Helper to load todo_items from the local database
+     */
+    private void initDB() {
+
+        todoItems = new ArrayList<>();
+
+        // Retrieve todo_list from the preferences
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        todoCount = preferences.getInt("todoCount", 0);
+        for (int i = 0; i < todoCount; i++) {
+            String temp = preferences.getString("todoItem" + i, "");
+            if (temp.isEmpty()) {
+                break;
+            } else {
+                todoItems.add(temp);
+            }
+        }
+
+        recyclerView.setHasFixedSize(true);
+        recyclerViewLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(recyclerViewLayoutManager);
+        recyclerViewAdapter = new TodoItemAdapter(todoItems);
+        recyclerView.setAdapter(recyclerViewAdapter);
     }
 
     /**
@@ -162,6 +209,60 @@ public class MainActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
+
+        // Set onClickListener for adding todoitems
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Button press effect
+                v.startAnimation(new AlphaAnimation(1F, 0.8F));
+
+                // show a pop up window to the user
+                showPrompt(v, "");
+            }
+        });
+    }
+
+    /**
+     * @brief Helper to show the popup window of editing todoitem
+     */
+    private void showPrompt(View view, final String text) {
+
+        LayoutInflater layoutInflater = LayoutInflater.from(view.getContext());
+        View promptsView = layoutInflater.inflate(R.layout.add_todo_popup, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(view.getContext());
+        alertDialogBuilder.setView(promptsView);
+        final EditText todoEditText = (EditText) promptsView.findViewById(R.id.input_todo_edit_text);
+
+        if (!text.isEmpty()) {
+            todoEditText.setText(text);
+        }
+
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        temporaryTodo = todoEditText.getText().toString();
+
+                        // If input is not empty, create an entry
+                        if (!temporaryTodo.isEmpty()) {
+                            todoItems.add(temporaryTodo);
+                            recyclerViewAdapter.notifyDataSetChanged();
+                            todoCount++;
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
 
@@ -174,17 +275,34 @@ public class MainActivity extends AppCompatActivity {
         init();
         // Initialize event handlers
         initOnClickListeners();
+        // Initialize database
+        initDB();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        isNotificationOn = preferences.getBoolean("notification", false);
+        notificationTime = preferences.getString("time", "");
+        preferredHour = preferences.getInt("preferred_hour", -1);
+        preferredMinute = preferences.getInt("preferred_minute", -1);
+        todoCount = preferences.getInt("todoCount", 0);
+
+
         Log.d(TAG, "Preferences >>\n\tisNotificationOn : " + isNotificationOn +
                 "\n\tnotificationTime : " + notificationTime +
                 "\n\tpreferredHour : " + preferredHour +
                 "\n\tpreferredMinute : " + preferredMinute +
-                "\n");
+                "\n\ttodoCount : " + todoCount +
+                "\n\n");
+
+        for (int i = 0; i < todoCount; i++) {
+            String temp = preferences.getString("todoItem" + i, "");
+            Log.d(TAG, "\n\ttodoItem" + i + " : " + temp);
+        }
+        Log.d(TAG, "\n\n");
     }
 
     /**
@@ -199,6 +317,11 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("time", notificationTime);
         editor.putInt("preferred_hour", preferredHour);
         editor.putInt("preferred_minute", preferredMinute);
+        // Update the todo_list
+        editor.putInt("todoCount", todoCount);
+        for (int i = 0; i < todoCount; i++) {
+            editor.putString("todoItem" + i, todoItems.get(i));
+        }
         editor.apply();
         Log.d(TAG, "Updating shared preferences\n");
     }

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">SimpleTodos</string>
     <string name="add">ADD</string>
+    <string name="todo">todo</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
 </resources>
