@@ -1,5 +1,6 @@
 package com.thinkty.simpletodos;
 
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,6 +72,7 @@ public class TodoItemAdapter extends RecyclerView.Adapter<TodoItemAdapter.TodoIt
     public void onBindViewHolder(@NonNull final TodoItemViewHolder holder, int position) {
         final String content = dataset.get(position);
         holder.todoTextView.setText(content);
+        holder.todoTextView.setMovementMethod(new ScrollingMovementMethod());
         holder.removeTodoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
